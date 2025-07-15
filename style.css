@@ -1,0 +1,63 @@
+body {
+  background-color: #fffaf5;
+  color: #4b3f3f;
+  font-family: 'Patrick Hand', cursive;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  width: 120px;
+  border-radius: 50%;
+  border: 4px dashed #f8c8dc;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+}
+
+h2 {
+  margin-top: 2rem;
+  color: #d15a83;
+  border-bottom: 2px dashed #f4b1c1;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+ul {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+ul li::before {
+  content: "🌷 ";
+}
+
+a {
+  color: #d15a83;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 3rem;
+  color: #b89b9b;
+}
