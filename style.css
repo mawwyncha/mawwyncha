@@ -1,5 +1,5 @@
 body {
-  background-color: #fffaf5;
+  background-color: #F4EBE8;
   color: #4b3f3f;
   font-family: 'Patrick Hand', cursive;
   margin: 0;
@@ -31,8 +31,8 @@ h1 {
 
 h2 {
   margin-top: 2rem;
-  color: #d15a83;
-  border-bottom: 2px dashed #f4b1c1;
+  color: #6a3e37;
+  border-bottom: 2px dashed #e0acd5;
   display: inline-block;
   padding-bottom: 4px;
 }
@@ -43,7 +43,7 @@ ul {
 }
 
 ul li::before {
-  content: "🌷 ";
+  content: "❤ ";
 }
 
 a {
