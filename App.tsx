@@ -1,133 +1,158 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = require("react");
-var StarElement_1 = require("./components/StarElement");
-var AmbientBackground_1 = require("./components/AmbientBackground");
-var Book_1 = require("./components/Book");
-var SkillNode_1 = require("./components/SkillNode");
-var constants_1 = require("./constants");
-var SIDE_QUESTS_DETAILS = {
-    "Threadcraft": {
-        title: "Threadcraft",
-        description: "Yarn & Fiber Arts",
-        content: "Weaving logic into tangible art through hooks, needles, and yarn.",
-        type: 'multi',
-        items: [
-            {
-                name: "Crocheting",
-                description: "Hook & Loops",
-                content: "Creating intricate patterns and structures using a single hook and yarn.",
-                placeholderUrl: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&q=80&w=600"
-            },
-            {
-                name: "Knitting",
-                description: "Twin Needles",
-                content: "Constructing soft fabrics through interlocking loops with two needles.",
-                placeholderUrl: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=600"
-            }
-        ]
-    },
-    "Tale and Poetic Weaving": {
-        title: "Tale and Poetic Weaving",
-        description: "Narrative Arts",
-        content: "Crafting chronicles and verses that bridge imagination and reality.",
-        type: 'multi',
-        items: [
-            {
-                name: "Short Story",
-                description: "Prose & Chronicles",
-                content: "Expansive worlds condensed into bite-sized journeys.",
-                placeholderUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600"
-            },
-            {
-                name: "Poetry",
-                description: "Verses & Rhythm",
-                content: "The geometry of emotion expressed through structured rhyme.",
-                placeholderUrl: "https://images.unsplash.com/photo-1516414447565-b14be0adc13e?auto=format&fit=crop&q=80&w=600"
-            }
-        ]
-    },
-    "Vocal Harmony": {
-        title: "Vocal Harmony",
-        description: "Vocal Arts",
-        content: "Exploring resonance, tone, and character through vocal expression.",
-        type: 'multi',
-        items: [
-            {
-                name: "Singing",
-                description: "Melodic Expression",
-                content: "Exploring resonance and emotional depth through song.",
-                placeholderUrl: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&q=80&w=600"
-            },
-            {
-                name: "Dubbing",
-                description: "Voice Characterization",
-                content: "Linguistic adaptation and bringing characters to life via voice-over.",
-                placeholderUrl: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=600"
-            }
-        ]
-    },
-    "Sketchcraft": {
-        title: "Sketchcraft",
-        description: "Visual Arts",
-        content: "Visual alchemy using pixels and strokes to define aesthetic boundaries.",
-        type: 'multi',
-        items: [
-            {
-                name: "Illustration",
-                description: "Digital Art",
-                content: "Crafting characters and environments with vibrant pixel and digital strokes.",
-                placeholderUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600"
-            },
-            {
-                name: "Cover Design",
-                description: "Media Aesthetics",
-                content: "Designing book covers and media assets that tell a story before the first page.",
-                placeholderUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600"
-            }
-        ]
-    }
+
+import React, { useState, useEffect } from 'react';
+import { StarElement } from './components/StarElement';
+import { AmbientBackground } from './components/AmbientBackground';
+import { Book } from './components/Book';
+import { SkillNode } from './components/SkillNode';
+import { EXPERIENCES, STORIES, ILLUSTRATIONS, SKILL_TREES, STATS, EDUCATION, ACHIEVEMENTS, CERTIFICATIONS } from './constants';
+import { ShortStory, Stat, SkillTree, Illustration } from './types';
+
+interface QuestItem {
+  name: string;
+  description: string;
+  content: string;
+  placeholderUrl?: string;
+}
+
+interface QuestDetail {
+  title: string;
+  description: string;
+  content: string;
+  type: 'image' | 'audio' | 'text' | 'multi';
+  placeholderUrl?: string;
+  items?: QuestItem[];
+}
+
+const SIDE_QUESTS_DETAILS: Record<string, QuestDetail> = {
+  "Threadcraft": {
+    title: "Threadcraft",
+    description: "Yarn & Fiber Arts",
+    content: "Weaving logic into tangible art through hooks, needles, and yarn.",
+    type: 'multi',
+    items: [
+      {
+        name: "Crocheting",
+        description: "Hook & Loops",
+        content: "Creating intricate patterns and structures using a single hook and yarn.",
+        placeholderUrl: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&q=80&w=600"
+      },
+      {
+        name: "Knitting",
+        description: "Twin Needles",
+        content: "Constructing soft fabrics through interlocking loops with two needles.",
+        placeholderUrl: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=600"
+      }
+    ]
+  },
+  "Tale and Poetic Weaving": {
+    title: "Tale and Poetic Weaving",
+    description: "Narrative Arts",
+    content: "Crafting chronicles and verses that bridge imagination and reality.",
+    type: 'multi',
+    items: [
+      {
+        name: "Short Story",
+        description: "Prose & Chronicles",
+        content: "Expansive worlds condensed into bite-sized journeys.",
+        placeholderUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600"
+      },
+      {
+        name: "Poetry",
+        description: "Verses & Rhythm",
+        content: "The geometry of emotion expressed through structured rhyme.",
+        placeholderUrl: "https://images.unsplash.com/photo-1516414447565-b14be0adc13e?auto=format&fit=crop&q=80&w=600"
+      }
+    ]
+  },
+  "Vocal Harmony": {
+    title: "Vocal Harmony",
+    description: "Vocal Arts",
+    content: "Exploring resonance, tone, and character through vocal expression.",
+    type: 'multi',
+    items: [
+      {
+        name: "Singing",
+        description: "Melodic Expression",
+        content: "Exploring resonance and emotional depth through song.",
+        placeholderUrl: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&q=80&w=600"
+      },
+      {
+        name: "Dubbing",
+        description: "Voice Characterization",
+        content: "Linguistic adaptation and bringing characters to life via voice-over.",
+        placeholderUrl: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=600"
+      }
+    ]
+  },
+  "Sketchcraft": {
+    title: "Sketchcraft",
+    description: "Visual Arts",
+    content: "Visual alchemy using pixels and strokes to define aesthetic boundaries.",
+    type: 'multi',
+    items: [
+      {
+        name: "Illustration",
+        description: "Digital Art",
+        content: "Crafting characters and environments with vibrant pixel and digital strokes.",
+        placeholderUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600"
+      },
+      {
+        name: "Cover Design",
+        description: "Media Aesthetics",
+        content: "Designing book covers and media assets that tell a story before the first page.",
+        placeholderUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600"
+      }
+    ]
+  }
 };
-var App = function () {
-    var _a = (0, react_1.useState)(null), selectedStory = _a[0], setSelectedStory = _a[1];
-    var _b = (0, react_1.useState)(null), selectedTree = _b[0], setSelectedTree = _b[1];
-    var _c = (0, react_1.useState)(null), selectedQuest = _c[0], setSelectedQuest = _c[1];
-    var _d = (0, react_1.useState)(null), selectedArt = _d[0], setSelectedArt = _d[1];
-    var _e = (0, react_1.useState)(null), hoveredStat = _e[0], setHoveredStat = _e[1];
-    var _f = (0, react_1.useState)({ x: 0, y: 0 }), mousePos = _f[0], setMousePos = _f[1];
-    var roles = [
-        { title: "Indonesian Linguist", lv: "MAX" },
-        { title: "Tech Learner", lv: "UPDATING..." },
-        { title: "illustrator", lv: "Lv. 40" },
-        { title: "Storyteller", lv: "Lv. 99" }
-    ];
-    var journeyPalette = [
-        { bg: '#E2DFFD', accent: '#8B93B8', border: '#C5BDFD', shadow: '#B0A7E6' },
-        { bg: '#FFE1E9', accent: '#D6A2AD', border: '#FFC4D4', shadow: '#EBB4C0' },
-        { bg: '#E8F0E3', accent: '#9BB096', border: '#D1E0C9', shadow: '#C0D4B8' },
-        { bg: '#F0F8FF', accent: '#9EA2C1', border: '#CCE7FF', shadow: '#BBDDFF' },
-    ];
-    (0, react_1.useEffect)(function () {
-        var handleEsc = function (e) {
-            if (e.key === 'Escape') {
-                setSelectedStory(null);
-                setSelectedTree(null);
-                setSelectedQuest(null);
-                setSelectedArt(null);
-            }
-        };
-        window.addEventListener('keydown', handleEsc);
-        return function () { return window.removeEventListener('keydown', handleEsc); };
-    }, []);
-    var handleMouseMove = function (e) {
-        setMousePos({ x: e.clientX, y: e.clientY });
+
+const App: React.FC = () => {
+  const [selectedStory, setSelectedStory] = useState<ShortStory | null>(null);
+  const [selectedTree, setSelectedTree] = useState<SkillTree | null>(null);
+  const [selectedQuest, setSelectedQuest] = useState<QuestDetail | null>(null);
+  const [selectedArt, setSelectedArt] = useState<Illustration | null>(null);
+  const [hoveredStat, setHoveredStat] = useState<Stat | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const roles = [
+    { title: "Indonesian Linguist", lv: "MAX" },
+    { title: "Tech Learner", lv: "UPDATING..." },
+    { title: "illustrator", lv: "Lv. 40" },
+    { title: "Storyteller", lv: "Lv. 99" }
+  ];
+
+  const journeyPalette = [
+    { bg: '#E2DFFD', accent: '#8B93B8', border: '#C5BDFD', shadow: '#B0A7E6' },
+    { bg: '#FFE1E9', accent: '#D6A2AD', border: '#FFC4D4', shadow: '#EBB4C0' },
+    { bg: '#E8F0E3', accent: '#9BB096', border: '#D1E0C9', shadow: '#C0D4B8' },
+    { bg: '#F0F8FF', accent: '#9EA2C1', border: '#CCE7FF', shadow: '#BBDDFF' },
+  ];
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedStory(null);
+        setSelectedTree(null);
+        setSelectedQuest(null);
+        setSelectedArt(null);
+      }
     };
-    var handleStatHover = function (stat) {
-        setHoveredStat(stat);
-    };
-    return (<div className="min-h-screen bg-transparent selection:bg-[#FF00FF] selection:text-white transition-all duration-700 relative overflow-x-hidden" onMouseMove={handleMouseMove}>
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleStatHover = (stat: Stat | null) => {
+    setHoveredStat(stat);
+  };
+
+  return (
+    <div className="min-h-screen bg-transparent selection:bg-[#FF00FF] selection:text-white transition-all duration-700 relative overflow-x-hidden" onMouseMove={handleMouseMove}>
       
-      <AmbientBackground_1.AmbientBackground />
+      <AmbientBackground />
 
       <div className="world-container flex flex-col items-center gap-16 pt-32 pb-40 px-4 md:px-0 relative z-10">
         
@@ -135,12 +160,16 @@ var App = function () {
         <section className="relative w-full max-w-7xl flex flex-col lg:flex-row items-stretch gap-6 px-4 md:px-0">
           <div className="flex-[1.8] bg-white/80 p-8 md:p-10 rounded-[2.5rem] backdrop-blur-md border-4 border-[#E8F0E3] shadow-2xl hover-lift flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 relative overflow-hidden">
             <div className="absolute top-4 right-8 opacity-20 pointer-events-none">
-                <StarElement_1.StarElement x="0" y="0" color="#E2DFFD" scale={1.5} ambient/>
+                <StarElement x="0" y="0" color="#E2DFFD" scale={1.5} ambient />
             </div>
 
             <div className="relative group flex-shrink-0 flex flex-col items-center justify-center">
               <div className="w-56 h-56 md:w-60 md:h-60 rounded-full overflow-hidden border-8 border-[#FFE1E9] pixel-shadow transition-transform duration-700 group-hover:rotate-3 shadow-xl">
-                <img src="https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?auto=format&fit=crop&q=80&w=800" alt="Maulida Dwi Cahyani" className="w-full h-full object-cover"/>
+                <img 
+                  src="https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?auto=format&fit=crop&q=80&w=800" 
+                  alt="Maulida Dwi Cahyani" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="mt-4 bg-[#8B93B8] text-white px-5 py-2 border-4 border-white pixel-font text-[9px] shadow-xl whitespace-nowrap transition-all duration-300 hover:bg-[#FFE1E9] hover:text-[#7E82A1] hover:scale-110 cursor-default">
                 ACTIVELY SEEKING
@@ -157,14 +186,16 @@ var App = function () {
               
               <div className="flex flex-col items-start justify-center py-2">
                 <div className="flex flex-col items-start gap-2">
-                  {roles.map(function (role, idx) { return (<div key={idx} className="group/role flex items-center gap-3 cursor-default transition-all duration-300">
+                  {roles.map((role, idx) => (
+                    <div key={idx} className="group/role flex items-center gap-3 cursor-default transition-all duration-300">
                       <p className="retro-font text-2xl text-[#A4B494] font-bold tracking-widest uppercase leading-none">
                         {role.title}
                       </p>
                       <span className="opacity-0 group-hover/role:opacity-100 transition-all duration-300 pixel-font text-[7px] bg-[#FFE1E9] text-[#7E82A1] px-2 py-0.5 rounded-md border border-[#D6A2AD]">
                         {role.lv}
                       </span>
-                    </div>); })}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -181,15 +212,17 @@ var App = function () {
                 <div className="w-full h-[2px] bg-white/20 rounded-full"></div>
               </div>
               <div className="space-y-4">
-                {constants_1.STATS.map(function (stat) { return (<div key={stat.short} className="group relative cursor-help" onMouseEnter={function () { return handleStatHover(stat); }} onMouseLeave={function () { return handleStatHover(null); }}>
+                {STATS.map(stat => (
+                  <div key={stat.short} className="group relative cursor-help" onMouseEnter={() => handleStatHover(stat)} onMouseLeave={() => handleStatHover(null)}>
                     <div className="flex justify-between items-center mb-1">
                       <span className="pixel-font text-[9px] opacity-80">{stat.label}</span>
                       <span className="pixel-font text-[9px] text-[#FFE1E9]">{stat.value}</span>
                     </div>
                     <div className="h-2 bg-black/20 rounded-full overflow-hidden border border-white/10 shadow-inner">
-                      <div className="h-full bg-gradient-to-r from-[#E2DFFD] via-[#FFE1E9] to-white transition-all duration-1000" style={{ width: "".concat(stat.value, "%") }}/>
+                      <div className="h-full bg-gradient-to-r from-[#E2DFFD] via-[#FFE1E9] to-white transition-all duration-1000" style={{ width: `${stat.value}%` }} />
                     </div>
-                  </div>); })}
+                  </div>
+                ))}
               </div>
             </div>
             <div className="pt-4 border-t-2 border-white/20 text-center relative group">
@@ -197,7 +230,7 @@ var App = function () {
               <span className="pixel-font text-[11px] text-[#FFE1E9] uppercase relative inline-block transition-all duration-300 group-hover:scale-110 group-hover:text-white">
                 Narrative Alchemist
                 <div className="absolute -top-3 -left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse pointer-events-none">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#FFF176"><path d="M12 1L14.5 9L23 9L16 14L18.5 22L12 17L5.5 22L8 14L1 9L9.5 9L12 1Z"/></svg>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#FFF176"><path d="M12 1L14.5 9L23 9L16 14L18.5 22L12 17L5.5 22L8 14L1 9L9.5 9L12 1Z" /></svg>
                 </div>
               </span>
             </div>
@@ -211,7 +244,9 @@ var App = function () {
               Core Skill Trees
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left mt-8">
-              {constants_1.SKILL_TREES.map(function (tree) { return (<SkillNode_1.SkillNode key={tree.id} tree={tree} onClick={setSelectedTree}/>); })}
+              {SKILL_TREES.map((tree) => (
+                <SkillNode key={tree.id} tree={tree} onClick={setSelectedTree} />
+              ))}
             </div>
           </div>
         </section>
@@ -223,10 +258,11 @@ var App = function () {
             <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-32 h-1 bg-[#E8F0E3] rounded-full"></div>
           </h2>
           <div className="space-y-16 relative pb-16">
-            <div className="absolute left-6 top-4 bottom-0 w-1.5 bg-[#E8F0E3] rounded-full opacity-50"/>
-            {constants_1.EXPERIENCES.map(function (exp, idx) {
-            var theme = journeyPalette[idx % journeyPalette.length];
-            return (<div key={idx} className="relative pl-24 group/exp">
+            <div className="absolute left-6 top-4 bottom-0 w-1.5 bg-[#E8F0E3] rounded-full opacity-50" />
+            {EXPERIENCES.map((exp, idx) => {
+              const theme = journeyPalette[idx % journeyPalette.length];
+              return (
+                <div key={idx} className="relative pl-24 group/exp">
                   <div className="absolute left-1.5 top-8 w-10 h-10 transition-all duration-500 z-20" style={{ color: theme.accent }}>
                     <div className="w-full h-full bg-white border-4 rounded-full shadow-lg group-hover/exp:scale-125 group-hover/exp:rotate-90 flex items-center justify-center transition-all" style={{ borderColor: 'currentColor' }}>
                         <div className="w-3 h-3 rounded-full bg-current"></div>
@@ -234,8 +270,8 @@ var App = function () {
                   </div>
 
                   <div className="relative">
-                    <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-[3rem] opacity-40 transition-transform duration-500 group-hover/exp:translate-x-6 group-hover/exp:translate-y-6" style={{ backgroundColor: theme.shadow }}/>
-                    <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[3rem] border-4 transition-transform duration-500 group-hover/exp:translate-x-3 group-hover/exp:translate-y-3" style={{ borderColor: theme.border, backgroundColor: 'white' }}/>
+                    <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-[3rem] opacity-40 transition-transform duration-500 group-hover/exp:translate-x-6 group-hover/exp:translate-y-6" style={{ backgroundColor: theme.shadow }} />
+                    <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[3rem] border-4 transition-transform duration-500 group-hover/exp:translate-x-3 group-hover/exp:translate-y-3" style={{ borderColor: theme.border, backgroundColor: 'white' }} />
                     <div className="relative bg-white p-10 md:p-12 rounded-[3rem] border-4 transition-all duration-500 shadow-xl group-hover/exp:-translate-y-2" style={{ borderColor: theme.bg }}>
                       <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
                         <div className="flex-1">
@@ -252,16 +288,19 @@ var App = function () {
                       <p className="retro-font text-2xl text-gray-500 mb-8 italic border-l-4 pl-6" style={{ borderColor: theme.bg }}>"{exp.description}"</p>
                       <div className="transition-all duration-700 overflow-hidden max-h-0 group-hover/exp:max-h-[800px] opacity-0 group-hover/exp:opacity-100">
                         <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                          {exp.details.map(function (detail, dIdx) { return (<li key={dIdx} className="retro-font text-2xl text-gray-600 flex gap-3 leading-snug">
+                          {exp.details.map((detail, dIdx) => (
+                              <li key={dIdx} className="retro-font text-2xl text-gray-600 flex gap-3 leading-snug">
                                 <span className="text-xl" style={{ color: theme.accent }}>✧</span>
                                 <span className="flex-1">{detail}</span>
-                              </li>); })}
+                              </li>
+                          ))}
                         </ul>
                       </div>
                     </div>
                   </div>
-                </div>);
-        })}
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -273,45 +312,55 @@ var App = function () {
             {/* Education History */}
             <div className="space-y-6 mb-12">
               <h3 className="pixel-font text-[10px] text-[#D6A2AD] uppercase mb-4 opacity-70 tracking-tighter">Education History</h3>
-              {constants_1.EDUCATION.map(function (edu, idx) { return (<div key={idx} className="bg-white/70 p-6 rounded-2xl border-2 border-[#FFE1E9] shadow-sm hover:border-[#FF00FF] transition-all group">
+              {EDUCATION.map((edu, idx) => (
+                <div key={idx} className="bg-white/70 p-6 rounded-2xl border-2 border-[#FFE1E9] shadow-sm hover:border-[#FF00FF] transition-all group">
                   <span className="pixel-font text-[8px] text-[#D6A2AD] block mb-2">{edu.period}</span>
                   <h3 className="retro-font text-3xl font-bold text-gray-800 mb-1 group-hover:text-[#FF00FF] transition-colors">{edu.school}</h3>
                   <p className="retro-font text-2xl text-[#7E82A1]">{edu.degree}</p>
                   <span className="pixel-font text-[9px] bg-[#FFE1E9] px-3 py-1 rounded-lg text-[#7E82A1] mt-2 inline-block">{edu.gpa}</span>
-                </div>); })}
+                </div>
+              ))}
             </div>
 
             {/* Certification Section - Re-styled as boxes similar to Education, NO ICONS */}
             <div className="space-y-6">
               <h3 className="pixel-font text-[10px] text-[#D6A2AD] uppercase mb-4 opacity-70 tracking-tighter">Certification</h3>
-              {constants_1.CERTIFICATIONS.map(function (cert, idx) { return (<div key={idx} className="bg-white/70 p-6 rounded-2xl border-2 border-[#FFE1E9] shadow-sm hover:border-[#FF00FF] transition-all group">
+              {CERTIFICATIONS.map((cert, idx) => (
+                <div key={idx} className="bg-white/70 p-6 rounded-2xl border-2 border-[#FFE1E9] shadow-sm hover:border-[#FF00FF] transition-all group">
                   <span className="pixel-font text-[8px] text-[#D6A2AD] block mb-2">{cert.year}</span>
                   <h3 className="retro-font text-3xl font-bold text-gray-800 mb-1 group-hover:text-[#FF00FF] transition-colors">{cert.name}</h3>
                   <p className="retro-font text-2xl text-[#7E82A1] mb-2">{cert.issuer}</p>
                   
-                  {cert.name === "TOEFL Prediction" && (<div className="mt-4 p-4 bg-[#FFE1E9]/20 rounded-xl border border-[#FFE1E9] space-y-1">
+                  {cert.name === "TOEFL Prediction" && (
+                    <div className="mt-4 p-4 bg-[#FFE1E9]/20 rounded-xl border border-[#FFE1E9] space-y-1">
                        <div className="flex justify-between retro-font text-lg"><span className="text-[#7E82A1]">Listening Comprehension</span> <span className="font-bold text-gray-800">620</span></div>
                        <div className="flex justify-between retro-font text-lg"><span className="text-[#7E82A1]">Structure & Written Exp.</span> <span className="font-bold text-gray-800">530</span></div>
                        <div className="flex justify-between retro-font text-lg"><span className="text-[#7E82A1]">Vocab. & Reading Comp.</span> <span className="font-bold text-gray-800">560</span></div>
                        <div className="pt-2 border-t border-[#FFE1E9] flex justify-between pixel-font text-[9px] text-[#FF00FF]"><span>TOTAL SCORE</span> <span className="font-bold">570</span></div>
-                    </div>)}
+                    </div>
+                  )}
                   
-                  {cert.name === "Typing Speed - Indonesia" && (<span className="pixel-font text-[9px] bg-[#FFE1E9]/50 px-3 py-1 rounded-lg text-[#7E82A1] mt-2 inline-block font-bold">422 CPM / 84 WPM</span>)}
-                </div>); })}
+                  {cert.name === "Typing Speed - Indonesia" && (
+                     <span className="pixel-font text-[9px] bg-[#FFE1E9]/50 px-3 py-1 rounded-lg text-[#7E82A1] mt-2 inline-block font-bold">422 CPM / 84 WPM</span>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="bg-[#E2DFFD]/30 p-12 rounded-[3rem] border-4 border-white shadow-xl hover-lift">
             <h2 className="pixel-font text-[14px] mb-10 text-[#7E82A1] uppercase tracking-widest border-b-4 border-[#E2DFFD] inline-block pb-2">Achievements</h2>
             <div className="grid grid-cols-1 gap-4">
-              {constants_1.ACHIEVEMENTS.map(function (ach, idx) { return (<div key={idx} className="flex gap-6 items-center bg-white/60 p-5 rounded-2xl border-2 border-white hover:bg-white transition-colors group">
+              {ACHIEVEMENTS.map((ach, idx) => (
+                <div key={idx} className="flex gap-6 items-center bg-white/60 p-5 rounded-2xl border-2 border-white hover:bg-white transition-colors group">
                   <div className="w-14 h-14 bg-[#E2DFFD] rounded-full flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">🏆</div>
                   <div>
                     <span className="pixel-font text-[8px] opacity-60 block">{ach.date}</span>
                     <h4 className="pixel-font text-[10px] text-[#7E82A1] mb-1">{ach.title}</h4>
                     <p className="retro-font text-xl text-gray-500">{ach.description}</p>
                   </div>
-                </div>); })}
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -321,9 +370,15 @@ var App = function () {
           <div className="bg-white/40 p-10 rounded-[4rem] border-4 border-[#E8F0E3] backdrop-blur-sm">
             <h2 className="pixel-font text-sm mb-8 text-[#A4B494] uppercase tracking-[0.4em]">Side Quests</h2>
             <div className="flex flex-wrap justify-center gap-6">
-              {Object.keys(SIDE_QUESTS_DETAILS).map(function (questName, i) { return (<button key={i} onClick={function () { return setSelectedQuest(SIDE_QUESTS_DETAILS[questName]); }} className="pixel-font text-[9px] bg-white text-[#7E82A1] px-6 py-3 border-4 border-[#E8F0E3] rounded-2xl shadow-sm hover:scale-110 hover:border-[#8B93B8] transition-all cursor-pointer">
+              {Object.keys(SIDE_QUESTS_DETAILS).map((questName, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => setSelectedQuest(SIDE_QUESTS_DETAILS[questName])}
+                  className="pixel-font text-[9px] bg-white text-[#7E82A1] px-6 py-3 border-4 border-[#E8F0E3] rounded-2xl shadow-sm hover:scale-110 hover:border-[#8B93B8] transition-all cursor-pointer"
+                >
                   {questName}
-                </button>); })}
+                </button>
+              ))}
             </div>
           </div>
         </section>
@@ -333,9 +388,18 @@ var App = function () {
           <div className="bg-white/80 p-12 rounded-[3rem] border-4 border-[#FFE1E9] shadow-2xl relative overflow-hidden">
             <h2 className="pixel-font text-lg mb-12 text-center text-[#7E82A1] uppercase tracking-[0.3em]">ART CODEX</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {constants_1.ILLUSTRATIONS.map(function (art) { return (<div key={art.id} onClick={function () { return setSelectedArt(art); }} className="relative group cursor-pointer">
+              {ILLUSTRATIONS.map((art) => (
+                <div 
+                  key={art.id} 
+                  onClick={() => setSelectedArt(art)}
+                  className="relative group cursor-pointer"
+                >
                   <div className="relative overflow-hidden rounded-2xl border-4 border-white shadow-lg transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-[0_20px_40px_rgba(255,225,233,0.8)]">
-                    <img src={art.url} alt={art.title} className="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-150"/>
+                    <img 
+                      src={art.url} 
+                      alt={art.title} 
+                      className="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-150" 
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#FFE1E9]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
                       <div className="pixel-font text-[7px] text-[#7E82A1] bg-white px-4 py-2 rounded-full shadow-sm">
                          View Details
@@ -347,7 +411,8 @@ var App = function () {
                       {art.title}
                     </span>
                   </div>
-                </div>); })}
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -357,7 +422,9 @@ var App = function () {
           <div className="bg-white/80 p-12 rounded-[3rem] border-4 border-[#E2DFFD] shadow-2xl relative overflow-hidden">
             <h2 className="pixel-font text-lg mb-16 text-center text-[#7E82A1] uppercase tracking-[0.3em]">TOME CODEX</h2>
             <div className="flex flex-wrap justify-center gap-12 pb-8">
-              {constants_1.STORIES.map(function (story) { return (<Book_1.Book key={story.id} story={story} onClick={setSelectedStory}/>); })}
+              {STORIES.map((story) => (
+                <Book key={story.id} story={story} onClick={setSelectedStory} />
+              ))}
             </div>
           </div>
         </section>
@@ -405,7 +472,10 @@ var App = function () {
               </p>
             </div>
             <div className="bg-[#F0F8FF] p-10 rounded-[2.5rem] border-4 border-dashed border-[#8B93B8]/20 flex flex-col items-center gap-8 shadow-inner">
-              <a href="mailto:maulida.dc@gmail.com" className="pixel-font text-sm bg-[#FF00FF] text-white px-16 py-8 border-b-[10px] border-[#D100D1] active:border-b-0 active:translate-y-2 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 group">
+              <a 
+                href="mailto:maulida.dc@gmail.com" 
+                className="pixel-font text-sm bg-[#FF00FF] text-white px-16 py-8 border-b-[10px] border-[#D100D1] active:border-b-0 active:translate-y-2 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 group"
+              >
                 <span className="group-hover:animate-pulse">RECRUIT</span>
               </a>
             </div>
@@ -417,11 +487,12 @@ var App = function () {
       {/* Modals & Tooltips */}
 
       {/* Art Preview Modal - RESIZED: max-w-md for compact item look */}
-      {selectedArt && (<div className="fixed inset-0 z-[300] bg-black/80 backdrop-blur-md flex items-center justify-center p-6" onClick={function () { return setSelectedArt(null); }}>
-           <div className="relative max-w-md w-full bg-white p-2 rounded-[2rem] border-[8px] border-[#FFE1E9] shadow-[0_0_50px_rgba(255,225,233,0.5)] animate-in fade-in zoom-in duration-300" onClick={function (e) { return e.stopPropagation(); }}>
-             <button onClick={function () { return setSelectedArt(null); }} className="absolute -top-4 -right-4 w-12 h-12 bg-white border-4 border-[#FFE1E9] rounded-full pixel-font text-xl flex items-center justify-center cursor-pointer shadow-xl hover:bg-red-50 transition-colors z-10">×</button>
+      {selectedArt && (
+        <div className="fixed inset-0 z-[300] bg-black/80 backdrop-blur-md flex items-center justify-center p-6" onClick={() => setSelectedArt(null)}>
+           <div className="relative max-w-md w-full bg-white p-2 rounded-[2rem] border-[8px] border-[#FFE1E9] shadow-[0_0_50px_rgba(255,225,233,0.5)] animate-in fade-in zoom-in duration-300" onClick={e => e.stopPropagation()}>
+             <button onClick={() => setSelectedArt(null)} className="absolute -top-4 -right-4 w-12 h-12 bg-white border-4 border-[#FFE1E9] rounded-full pixel-font text-xl flex items-center justify-center cursor-pointer shadow-xl hover:bg-red-50 transition-colors z-10">×</button>
              <div className="overflow-hidden rounded-[1.5rem]">
-               <img src={selectedArt.url} alt={selectedArt.title} className="w-full h-auto max-h-[60vh] object-contain bg-[#F8F8F8]"/>
+               <img src={selectedArt.url} alt={selectedArt.title} className="w-full h-auto max-h-[60vh] object-contain bg-[#F8F8F8]" />
              </div>
              <div className="p-6 text-center bg-[#FFFEFA] rounded-b-[1.5rem] border-t-4 border-[#FFE1E9]">
                 <h3 className="pixel-font text-[9px] text-[#7E82A1] uppercase mb-1 tracking-widest leading-relaxed">{selectedArt.title}</h3>
@@ -433,30 +504,42 @@ var App = function () {
                 </div>
              </div>
            </div>
-        </div>)}
+        </div>
+      )}
 
-      {hoveredStat && (<div className="fixed z-[200] pointer-events-none bg-white/95 text-[#7E82A1] p-5 rounded-2xl border-4 border-[#8B93B8] shadow-2xl w-64 animate-in fade-in zoom-in duration-200" style={{ left: "".concat(mousePos.x - 128, "px"), top: "".concat(mousePos.y - 140, "px") }}>
+      {hoveredStat && (
+        <div className="fixed z-[200] pointer-events-none bg-white/95 text-[#7E82A1] p-5 rounded-2xl border-4 border-[#8B93B8] shadow-2xl w-64 animate-in fade-in zoom-in duration-200" style={{ left: `${mousePos.x - 128}px`, top: `${mousePos.y - 140}px` }}>
           <span className="pixel-font text-[11px] block mb-2 underline decoration-[#FFE1E9] decoration-4">{hoveredStat.label}</span>
           <p className="retro-font text-xl leading-snug text-gray-700">{hoveredStat.description}</p>
-        </div>)}
+        </div>
+      )}
 
-      {selectedQuest && (<div className="fixed inset-0 z-[250] bg-black/40 backdrop-blur-sm flex items-center justify-center p-6" onClick={function () { return setSelectedQuest(null); }}>
-          <div className={"bg-white ".concat(selectedQuest.type === 'multi' ? 'max-w-4xl' : 'max-w-lg', " w-full p-10 border-[8px] border-[#8B93B8] rounded-[3rem] shadow-2xl relative animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[90vh] custom-scrollbar")} onClick={function (e) { return e.stopPropagation(); }}>
-             <button onClick={function () { return setSelectedQuest(null); }} className="absolute top-4 right-4 w-12 h-12 bg-white border-4 border-[#8B93B8] rounded-full pixel-font text-xl flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors">×</button>
+      {selectedQuest && (
+        <div className="fixed inset-0 z-[250] bg-black/40 backdrop-blur-sm flex items-center justify-center p-6" onClick={() => setSelectedQuest(null)}>
+          <div className={`bg-white ${selectedQuest.type === 'multi' ? 'max-w-4xl' : 'max-w-lg'} w-full p-10 border-[8px] border-[#8B93B8] rounded-[3rem] shadow-2xl relative animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[90vh] custom-scrollbar`} onClick={e => e.stopPropagation()}>
+             <button onClick={() => setSelectedQuest(null)} className="absolute top-4 right-4 w-12 h-12 bg-white border-4 border-[#8B93B8] rounded-full pixel-font text-xl flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors">×</button>
              <h3 className="pixel-font text-lg text-[#7E82A1] uppercase mb-8 text-center">{selectedQuest.title}</h3>
-             {selectedQuest.type === 'multi' && selectedQuest.items ? (<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 {selectedQuest.items.map(function (item, idx) { return (<div key={idx} className="bg-[#FFFEFA] p-6 rounded-[2rem] border-4 border-dashed border-[#8B93B8]/20 flex flex-col items-center group hover:border-[#8B93B8]/40 transition-all">
-                      <img src={item.placeholderUrl} className="w-full aspect-video rounded-xl object-cover mb-4 group-hover:scale-105 transition-transform" alt={item.name}/>
+             {selectedQuest.type === 'multi' && selectedQuest.items ? (
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 {selectedQuest.items.map((item, idx) => (
+                   <div key={idx} className="bg-[#FFFEFA] p-6 rounded-[2rem] border-4 border-dashed border-[#8B93B8]/20 flex flex-col items-center group hover:border-[#8B93B8]/40 transition-all">
+                      <img src={item.placeholderUrl} className="w-full aspect-video rounded-xl object-cover mb-4 group-hover:scale-105 transition-transform" alt={item.name} />
                       <h4 className="pixel-font text-[11px] text-[#7E82A1] mb-2 uppercase">{item.name}</h4>
                       <p className="retro-font text-2xl text-gray-500 text-center leading-snug">"{item.content}"</p>
-                   </div>); })}
-               </div>) : (<p className="retro-font text-3xl text-gray-600 leading-snug italic text-center">"{selectedQuest.content}"</p>)}
+                   </div>
+                 ))}
+               </div>
+             ) : (
+               <p className="retro-font text-3xl text-gray-600 leading-snug italic text-center">"{selectedQuest.content}"</p>
+             )}
           </div>
-        </div>)}
+        </div>
+      )}
 
-      {selectedTree && (<div className="fixed inset-0 z-[100] bg-[#7E82A1]/60 backdrop-blur-xl flex items-center justify-center p-6" onClick={function () { return setSelectedTree(null); }}>
-          <div className="bg-white max-w-xl w-full p-8 border-[6px] rounded-[3rem] shadow-2xl relative" onClick={function (e) { return e.stopPropagation(); }} style={{ borderColor: selectedTree.accent }}>
-            <button onClick={function () { return setSelectedTree(null); }} className="absolute -top-4 -right-4 w-12 h-12 bg-white border-4 border-[#7E82A1] rounded-full pixel-font text-xl flex items-center justify-center cursor-pointer shadow-lg hover:bg-gray-50">×</button>
+      {selectedTree && (
+        <div className="fixed inset-0 z-[100] bg-[#7E82A1]/60 backdrop-blur-xl flex items-center justify-center p-6" onClick={() => setSelectedTree(null)}>
+          <div className="bg-white max-w-xl w-full p-8 border-[6px] rounded-[3rem] shadow-2xl relative" onClick={e => e.stopPropagation()} style={{ borderColor: selectedTree.accent }}>
+            <button onClick={() => setSelectedTree(null)} className="absolute -top-4 -right-4 w-12 h-12 bg-white border-4 border-[#7E82A1] rounded-full pixel-font text-xl flex items-center justify-center cursor-pointer shadow-lg hover:bg-gray-50">×</button>
             <div className="flex items-center gap-5 mb-6 border-b-4 border-gray-100 pb-6">
               <span className="text-5xl">{selectedTree.emoji}</span>
               <div>
@@ -465,29 +548,60 @@ var App = function () {
               </div>
             </div>
             <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-4 custom-scrollbar">
-              {selectedTree.tiers.map(function (tier, idx) { return (<div key={idx} className="bg-[#FFFEFA] p-5 rounded-2xl border-2 border-gray-100">
+              {selectedTree.tiers.map((tier, idx) => (
+                <div key={idx} className="bg-[#FFFEFA] p-5 rounded-2xl border-2 border-gray-100">
                   <h4 className="pixel-font text-[10px] text-[#7E82A1] mb-3 uppercase">{tier.name}</h4>
                   <ul className="space-y-2">
-                    {tier.skills.map(function (skill, sIdx) { return (<li key={sIdx} className="retro-font text-xl text-gray-600 flex items-start gap-3">
+                    {tier.skills.map((skill, sIdx) => (
+                      <li key={sIdx} className="retro-font text-xl text-gray-600 flex items-start gap-3">
                         <span className="text-[#FF00FF]">✦</span> {skill}
-                      </li>); })}
+                      </li>
+                    ))}
                   </ul>
-                </div>); })}
+                </div>
+              ))}
             </div>
           </div>
-        </div>)}
+        </div>
+      )}
 
-      {selectedStory && (<div className="fixed inset-0 z-[100] bg-[#8B93B8]/60 backdrop-blur-xl flex items-center justify-center p-6" onClick={function () { return setSelectedStory(null); }}>
-           <div className="bg-[#FFFEFA] max-w-2xl w-full p-12 border-[8px] rounded-[3rem] shadow-2xl relative" onClick={function (e) { return e.stopPropagation(); }} style={{ borderColor: selectedStory.coverColor }}>
-             <button onClick={function () { return setSelectedStory(null); }} className="absolute -top-4 -right-4 w-12 h-12 bg-white border-4 border-[#8B93B8] rounded-full pixel-font text-xl flex items-center justify-center shadow-xl cursor-pointer hover:bg-white/80">×</button>
+      {selectedStory && (
+        <div className="fixed inset-0 z-[100] bg-[#8B93B8]/60 backdrop-blur-xl flex items-center justify-center p-6" onClick={() => setSelectedStory(null)}>
+           <div className="bg-[#FFFEFA] max-w-2xl w-full p-12 border-[8px] rounded-[3rem] shadow-2xl relative" onClick={e => e.stopPropagation()} style={{ borderColor: selectedStory.coverColor }}>
+             <button onClick={() => setSelectedStory(null)} className="absolute -top-4 -right-4 w-12 h-12 bg-white border-4 border-[#8B93B8] rounded-full pixel-font text-xl flex items-center justify-center shadow-xl cursor-pointer hover:bg-white/80">×</button>
              <h3 className="pixel-font text-xl text-[#7E82A1] uppercase mb-8 border-b-4 border-dashed pb-6" style={{ borderColor: selectedStory.coverColor }}>{selectedStory.title}</h3>
              <div className="retro-font text-3xl leading-relaxed text-gray-700 italic">
                "{selectedStory.content}"
              </div>
            </div>
-        </div>)}
+        </div>
+      )}
 
-      <style>{"\n        .custom-scrollbar::-webkit-scrollbar { width: 8px; }\n        .custom-scrollbar::-webkit-scrollbar-track { background: #f8f8f8; border-radius: 10px; }\n        .custom-scrollbar::-webkit-scrollbar-thumb { background: #FF00FF; border-radius: 10px; border: 2px solid #f8f8f8; }\n        \n        @keyframes iridescent-shift {\n          0% { background-position: 0% 50%; }\n          50% { background-position: 100% 50%; }\n          100% { background-position: 0% 50%; }\n        }\n\n        @keyframes bio-blinking-glow {\n          0%, 100% { box-shadow: inset 0 0 15px rgba(226, 223, 253, 0.1); border-color: #E2DFFD; }\n          50% { box-shadow: inset 0 0 30px rgba(255, 0, 255, 0.4); border-color: #FF00FF; }\n        }\n\n        .iridescent-bio {\n          background: linear-gradient(-45deg, #F8FBFA, #E2DFFD, #FFE1E9, #E8F0E3, #F8FBFA);\n          background-size: 300% 300%;\n          animation: iridescent-shift 10s ease infinite, bio-blinking-glow 4s ease-in-out infinite;\n          overflow: hidden;\n        }\n      "}</style>
-    </div>);
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f8f8f8; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #FF00FF; border-radius: 10px; border: 2px solid #f8f8f8; }
+        
+        @keyframes iridescent-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        @keyframes bio-blinking-glow {
+          0%, 100% { box-shadow: inset 0 0 15px rgba(226, 223, 253, 0.1); border-color: #E2DFFD; }
+          50% { box-shadow: inset 0 0 30px rgba(255, 0, 255, 0.4); border-color: #FF00FF; }
+        }
+
+        .iridescent-bio {
+          background: linear-gradient(-45deg, #F8FBFA, #E2DFFD, #FFE1E9, #E8F0E3, #F8FBFA);
+          background-size: 300% 300%;
+          animation: iridescent-shift 10s ease infinite, bio-blinking-glow 4s ease-in-out infinite;
+          overflow: hidden;
+        }
+      `}</style>
+    </div>
+  );
 };
-exports.default = App;
+
+export default App;
